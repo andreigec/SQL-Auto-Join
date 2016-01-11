@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ANDREICSLIB;
+using ANDREICSLIB.ClassExtras;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 
@@ -16,7 +17,6 @@ namespace SQLAutoJoin
     public class Page
     {
         public List<List<string>> Cells = new List<List<string>>();
-        public List<int> HeaderRows = new List<int>();
         public string Name = "Page0";
 
         public void Add(List<string> row)
@@ -37,6 +37,7 @@ namespace SQLAutoJoin
     {
         public List<Page> pages = new List<Page>();
         public Page currentPage = new Page();
+        public List<string> HeaderRows = new List<string>();
 
 
         public DataTableExporter()
@@ -49,18 +50,24 @@ namespace SQLAutoJoin
             currentPage = new Page { Name = "Page" + pages.Count };
         }
 
-        public void AddRow(Dictionary<string, object> row, bool newheaders, string tableName)
+        public void AddRow(Dictionary<string, object> rows, string tableName)
         {
-            if (newheaders)
-            {
-                var hd = row.Keys.ToList();
-                hd.Insert(0, tableName);
-                currentPage.Add(hd);
-                currentPage.HeaderRows.Add(currentPage.RowCount);
-            }
+            var unique = rows.Keys.Where(s => HeaderRows.Contains(s) == false).ToList();
+            if (HeaderRows.Any() == false)
+                HeaderRows.Add("");
 
-            var data = row.Values.Select(s => s.ToString()).ToList();
-            data.Insert(0, tableName);
+            HeaderRows.AddRange(unique);
+
+            var data = ListExtras.Initialise(HeaderRows.Count, "");
+            foreach (var row in rows)
+            {
+                var i = HeaderRows.GetIndex(row.Key);
+                if (i != null)
+                {
+                    data[i.Value] = row.Value.ToString();
+                }
+            }
+            data[0] = tableName;
 
             //add data
             currentPage.Add(data);
@@ -68,9 +75,9 @@ namespace SQLAutoJoin
 
         private bool CellsMatch(ExcelPackage ep, int x, int y)
         {
-            var matches = ep.Workbook.Worksheets.Select(s => s.Cells[y, x].Value).Distinct().Count();
-
-            return matches == 1;
+            var matches = ep.Workbook.Worksheets.Select(s => s.Cells[y, x].Value ?? "").ToList();
+            var matches2 = matches.Distinct().Count();
+            return matches2 == 1;
         }
 
         private void AutoFit(ExcelPackage ep)
@@ -79,33 +86,33 @@ namespace SQLAutoJoin
             for (int a = 1; a <= count; a++)
             {
                 ep.Workbook.Worksheets[a].Cells.AutoFitColumns();
+                ep.Workbook.Worksheets[a].View.FreezePanes(2, 2);
             }
         }
 
-        private void SetCellsColour(ExcelPackage ep, int x, int y, Color col)
+        private void SetCellsStyle(ExcelPackage ep, int x, int y, Color col)
         {
             int count = ep.Workbook.Worksheets.Count;
             for (int c = 1; c <= count; c++)
             {
-                var w = ep.Workbook.Worksheets[c];
-                SetCellsColour(ep, w, x, y, col);
+                SetCellsStyle(ep.Workbook.Worksheets[c], x, y, col);
             }
         }
 
-        private void SetCellsColour(ExcelPackage ep, ExcelWorksheet s, int x, int y, Color col)
+        private void SetCellsStyle(ExcelWorksheet s, int x, int y, Color col)
         {
+            s.Cells[y, x].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            s.Cells[y, x].Style.Fill.BackgroundColor.SetColor(col);
+
             s.Cells[y, x].Style.Border.Bottom.Style =
-                   s.Cells[y, x].Style.Border.Left.Style =
-                   s.Cells[y, x].Style.Border.Top.Style =
-                   s.Cells[y, x].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                 s.Cells[y, x].Style.Border.Left.Style =
+                 s.Cells[y, x].Style.Border.Top.Style =
+                 s.Cells[y, x].Style.Border.Right.Style = ExcelBorderStyle.Thin;
 
             s.Cells[y, x].Style.Border.Bottom.Color.SetColor(Color.Black);
             s.Cells[y, x].Style.Border.Left.Color.SetColor(Color.Black);
             s.Cells[y, x].Style.Border.Top.Color.SetColor(Color.Black);
             s.Cells[y, x].Style.Border.Right.Color.SetColor(Color.Black);
-
-            s.Cells[y, x].Style.Fill.PatternType = ExcelFillStyle.Solid;
-            s.Cells[y, x].Style.Fill.BackgroundColor.SetColor(col);
         }
 
         private void ColourFormatDocument(ExcelPackage ep, int maxx, int maxy)
@@ -116,34 +123,27 @@ namespace SQLAutoJoin
                 for (int x = 1; x < maxx; x++)
                 {
                     bool match = CellsMatch(ep, x, y);
-                    if (match == false)
-                        SetCellsColour(ep, x, y, Color.Red);
+                    Color c = match ? Color.Transparent : Color.Red;
+                    SetCellsStyle(ep, x, y, c);
                 }
             }
         }
 
         private void SetHeaderColours(ExcelPackage ep, int maxx, int maxy)
         {
-            int i = 1;
-            foreach (var p in pages)
+            for (int i = 1; i <= pages.Count; i++)
             {
                 var w = ep.Workbook.Worksheets[i];
-                foreach (var y in p.HeaderRows)
+
+                for (int y = 1; y < maxy; y++)
                 {
-                    for (int x = 1; x < maxx; x++)
-                    {
-                        SetCellsColour(ep, w, x, y, Color.SlateGray);
-                    }
+                    SetCellsStyle(w, 1, y, Color.Gainsboro);
                 }
 
-                foreach (var x in p.HeaderRows)
+                for (int x = 1; x < maxx; x++)
                 {
-                    for (int y = 1; y < maxy; y++)
-                    {
-                        SetCellsColour(ep, w, x, y, Color.DarkGray);
-                    }
+                    SetCellsStyle(w, x, 1, Color.Azure);
                 }
-                i++;
             }
         }
 
@@ -170,7 +170,11 @@ namespace SQLAutoJoin
         {
             ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add(p.Name);
             int x = 1, y = 1;
-            foreach (var row in p.Cells)
+            var rows = new List<List<string>>();
+            rows.Add(HeaderRows);
+            rows.AddRange(p.Cells);
+
+            foreach (var row in rows)
             {
                 foreach (var cell in row)
                 {
