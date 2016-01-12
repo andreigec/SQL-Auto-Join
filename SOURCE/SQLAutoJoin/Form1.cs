@@ -51,6 +51,10 @@ Zip Assets © SharpZipLib (http://www.sharpdevelop.net/OpenSource/SharpZipLib/)
             InitLicensing();
 
             var literals = LoadConfig();
+
+            if (string.IsNullOrEmpty(connectionStringTB.Text) == false)
+                UpdateConnectionString(connectionStringTB.Text);
+
             if (literals != null && literals.Any())
             {
                 foreach (var l in literals)
@@ -153,7 +157,7 @@ Zip Assets © SharpZipLib (http://www.sharpdevelop.net/OpenSource/SharpZipLib/)
             catch (Exception)
             {
             }
-          
+
         }
 
         private void button1_Click(object sender, EventArgs e)
