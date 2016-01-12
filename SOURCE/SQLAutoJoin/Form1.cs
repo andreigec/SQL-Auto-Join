@@ -106,8 +106,11 @@ Zip Assets © SharpZipLib (http://www.sharpdevelop.net/OpenSource/SharpZipLib/)
 
         private void QueryB_Click(object sender, EventArgs e)
         {
-            if (c == null)
+            if (string.IsNullOrEmpty(connectionStringTB.Text))
+            {
+                MessageBox.Show("Error, no connection string");
                 return;
+            }
 
             UpdateConnectionString(connectionStringTB.Text);
             try
