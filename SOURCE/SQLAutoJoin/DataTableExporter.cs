@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -147,7 +148,7 @@ namespace SQLAutoJoin
             }
         }
 
-        public void ExportXLS(string filename)
+        public void ExportXLS(string filename, bool openfile)
         {
             FileInfo newFile = new FileInfo(filename);
 
@@ -164,6 +165,8 @@ namespace SQLAutoJoin
             AutoFit(pck);
             pck.Save();
             pck.Dispose();
+            if (openfile)
+                Process.Start(filename);
         }
 
         private void SetWorkbookCells(ExcelPackage pck, Page p, ref int maxx, ref int maxy)

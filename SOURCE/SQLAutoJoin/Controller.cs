@@ -45,21 +45,21 @@ namespace SQLRegex
 FROM INFORMATION_SCHEMA.TABLES
 WHERE TABLE_TYPE = 'BASE TABLE' ";
 
-            c.Database.CommandTimeout = 300;
+            c.Database.CommandTimeout = 3;
             var qr = c.Database.SqlQuery<string>(q);
 
             var res = qr.OrderBy(s => s.ToString()).ToList();
             return res;
         }
 
-        public void Generate(string table, string @where)
+        public void Generate(string table, string @where, bool openFile)
         {
             DataTableExporter cs = new DataTableExporter();
             var ts = new List<string>();
             AddRows(ref cs, table, ref ts, @where);
 
             //output
-            cs.ExportXLS("SQLAUTOJOIN" + FileExtras.GenerateRandomFileName("xlsx"));
+            cs.ExportXLS("SQLAUTOJOIN" + FileExtras.GenerateRandomFileName("xlsx"), openFile);
         }
 
         public class SQLKey
