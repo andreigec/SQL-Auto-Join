@@ -12,6 +12,7 @@ using System.Data.Entity.Core.Metadata.Edm;
 using System.ServiceModel.Channels;
 using System.Text.RegularExpressions;
 using ANDREICSLIB.ClassExtras;
+using SQLAutoJoin.ServiceReference1;
 
 namespace SQLRegex
 {
@@ -19,8 +20,8 @@ namespace SQLRegex
     {
         #region licensing
 
-        private const string AppTitle = "SQLAutoJoin";
-        private const double AppVersion = 0.1;
+        private const string AppTitle = "SQL Auto Join";
+        private const double AppVersion = 0.2;
         private const String HelpString = "";
 
         private readonly String OtherText =
@@ -30,10 +31,36 @@ Licensed under GNU LGPL (http://www.gnu.org/)
 OCR © Tessnet2/Tesseract (http://www.pixel-technology.com/freeware/tessnet2/)(https://code.google.com/p/tesseract-ocr/)
 Zip Assets © SharpZipLib (http://www.sharpdevelop.net/OpenSource/SharpZipLib/)
 ";
+        public Licensing.DownloadedSolutionDetails GetDetails()
+        {
+            try
+            {
+                var sr = new ServicesClient();
+                var ti = sr.GetTitleInfo(AppTitle);
+                if (ti == null)
+                    return null;
+                return ToDownloadedSolutionDetails(ti);
+
+            }
+            catch (Exception ex)
+            {
+            }
+            return null;
+        }
+
+        public static Licensing.DownloadedSolutionDetails ToDownloadedSolutionDetails(TitleInfoServiceModel tism)
+        {
+            return new Licensing.DownloadedSolutionDetails()
+            {
+                ZipFileLocation = tism.LatestTitleDownloadPath,
+                ChangeLog = tism.LatestTitleChangelog,
+                Version = tism.LatestTitleVersion
+            };
+        }
 
         public void InitLicensing()
         {
-            Licensing.CreateLicense(this, menuStrip1, new Licensing.SolutionDetails(null, HelpString, AppTitle, AppVersion, OtherText));
+            Licensing.CreateLicense(this, menuStrip1, new Licensing.SolutionDetails(GetDetails, HelpString, AppTitle, AppVersion, OtherText));
         }
 
         #endregion
@@ -52,8 +79,16 @@ Zip Assets © SharpZipLib (http://www.sharpdevelop.net/OpenSource/SharpZipLib/)
 
             var literals = LoadConfig();
 
-            if (string.IsNullOrEmpty(connectionStringTB.Text) == false)
-                UpdateConnectionString(connectionStringTB.Text);
+            try
+            {
+                if (string.IsNullOrEmpty(connectionStringTB.Text) == false)
+                    UpdateConnectionString(connectionStringTB.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading cs:" + connectionStringTB.Text);
+                connectionStringTB.Text = "";
+            }
 
             if (literals != null && literals.Any())
             {
