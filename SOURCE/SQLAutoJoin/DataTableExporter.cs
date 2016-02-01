@@ -51,21 +51,26 @@ namespace SQLAutoJoin
             currentPage = new Page { Name = "Page" + pages.Count };
         }
 
-        public void AddRow(Dictionary<string, object> rows, string tableName)
+        public void AddRow(Dictionary<string, object> rows, string tableName, bool alphaHeaderCols)
         {
             var unique = rows.Keys.Where(s => HeaderRows.Contains(s) == false).ToList();
             if (HeaderRows.Any() == false)
                 HeaderRows.Add("");
 
-            HeaderRows.AddRange(unique);
+            if (alphaHeaderCols == false)
+                HeaderRows.AddRange(unique);
+            else
+            {
+                ListExtras.InsertAlphabetically(ref HeaderRows, unique);
+            }
 
             var data = ListExtras.Initialise(HeaderRows.Count, "");
             foreach (var row in rows)
             {
-                var i = HeaderRows.GetIndex(row.Key);
-                if (i != null)
+                var i = HeaderRows.IndexOf(row.Key);
+                if (i != -1)
                 {
-                    data[i.Value] = row.Value.ToString();
+                    data[i] = row.Value.ToString();
                 }
             }
             data[0] = tableName;

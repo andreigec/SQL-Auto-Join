@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading.Tasks;
 using ANDREICSLIB;
+using ANDREICSLIB.ClassExtras;
 
 namespace SQLAutoJoin
 {
@@ -13,10 +16,14 @@ namespace SQLAutoJoin
     {
         public static List<Dictionary<string, object>> DynamicSQlQueryToDict(this Database database, string sql, params object[] parameters)
         {
-            var r =
-                ((DbRawSqlQuery)DynamicSqlQuery(database, sql, parameters)).ToListAsync()
-                    .Result.Select(s => s.TurnObjectIntoDictionary()).ToList();
-            return r;
+            var l = (((DbRawSqlQuery)DynamicSqlQuery(database, sql, parameters)).ToListAsync()).Result;
+            var ret = new List<Dictionary<string, object>>();
+            foreach (var d in l)
+            {
+                var dd = ANDREICSLIB.ClassExtras.ExpandoObjectHelpers.ToDictionary(d);
+                ret.Add(dd);
+            }
+            return ret;
         }
 
         public static dynamic DynamicSqlQuery(this Database database, string sql, params object[] parameters)

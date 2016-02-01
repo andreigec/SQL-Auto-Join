@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ANDREICSLIB, Version=1.0.86.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ANDREICSLIB.1.0.86.0\lib\net451\ANDREICSLIB.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
@@ -111,13 +115,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\ANDREICSLIB\SOURCE\ANDREICSLIB\ANDREICSLIB.csproj">
-      <Project>{469b8120-b6d8-48bd-97c4-afab63aee304}</Project>
-      <Name>ANDREICSLIB</Name>
-    </ProjectReference>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

@@ -34,6 +34,7 @@ namespace SQLRegex
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.dontSaveOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openXLSOnFinishToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.connectionStringTB = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.tableLB = new System.Windows.Forms.ListBox();
@@ -43,7 +44,7 @@ namespace SQLRegex
             this.whereTB = new System.Windows.Forms.TextBox();
             this.QueryB = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.openXLSOnFinishToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.headerColumnsInAZOrderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -79,7 +80,8 @@ namespace SQLRegex
             this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripSeparator1,
             this.dontSaveOptionsToolStripMenuItem,
-            this.openXLSOnFinishToolStripMenuItem});
+            this.openXLSOnFinishToolStripMenuItem,
+            this.headerColumnsInAZOrderToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
@@ -87,14 +89,23 @@ namespace SQLRegex
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(171, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(220, 6);
             // 
             // dontSaveOptionsToolStripMenuItem
             // 
             this.dontSaveOptionsToolStripMenuItem.CheckOnClick = true;
             this.dontSaveOptionsToolStripMenuItem.Name = "dontSaveOptionsToolStripMenuItem";
-            this.dontSaveOptionsToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.dontSaveOptionsToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
             this.dontSaveOptionsToolStripMenuItem.Text = "Don\'t save options";
+            // 
+            // openXLSOnFinishToolStripMenuItem
+            // 
+            this.openXLSOnFinishToolStripMenuItem.Checked = true;
+            this.openXLSOnFinishToolStripMenuItem.CheckOnClick = true;
+            this.openXLSOnFinishToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.openXLSOnFinishToolStripMenuItem.Name = "openXLSOnFinishToolStripMenuItem";
+            this.openXLSOnFinishToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.openXLSOnFinishToolStripMenuItem.Text = "Open XLS on finish";
             // 
             // connectionStringTB
             // 
@@ -174,14 +185,12 @@ namespace SQLRegex
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // openXLSOnFinishToolStripMenuItem
+            // headerColumnsInAZOrderToolStripMenuItem
             // 
-            this.openXLSOnFinishToolStripMenuItem.Checked = true;
-            this.openXLSOnFinishToolStripMenuItem.CheckOnClick = true;
-            this.openXLSOnFinishToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.openXLSOnFinishToolStripMenuItem.Name = "openXLSOnFinishToolStripMenuItem";
-            this.openXLSOnFinishToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
-            this.openXLSOnFinishToolStripMenuItem.Text = "Open XLS on finish";
+            this.headerColumnsInAZOrderToolStripMenuItem.CheckOnClick = true;
+            this.headerColumnsInAZOrderToolStripMenuItem.Name = "headerColumnsInAZOrderToolStripMenuItem";
+            this.headerColumnsInAZOrderToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.headerColumnsInAZOrderToolStripMenuItem.Text = "Header columns in AZ order";
             // 
             // Form1
             // 
@@ -228,6 +237,7 @@ namespace SQLRegex
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ToolStripMenuItem openXLSOnFinishToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem headerColumnsInAZOrderToolStripMenuItem;
     }
 }
 

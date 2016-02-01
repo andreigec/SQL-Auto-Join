@@ -12,6 +12,8 @@ using System.Data.Entity.Core.Metadata.Edm;
 using System.ServiceModel.Channels;
 using System.Text.RegularExpressions;
 using ANDREICSLIB.ClassExtras;
+using ANDREICSLIB.Helpers;
+using ANDREICSLIB.Licensing;
 using SQLAutoJoin.ServiceReference1;
 
 namespace SQLRegex
@@ -150,7 +152,7 @@ Zip Assets © SharpZipLib (http://www.sharpdevelop.net/OpenSource/SharpZipLib/)
             UpdateConnectionString(connectionStringTB.Text);
             try
             {
-                c.Generate(tableLB.Text, "where " + whereTB.Text, openXLSOnFinishToolStripMenuItem.Checked);
+                c.Generate(tableLB.Text, "where " + whereTB.Text, openXLSOnFinishToolStripMenuItem.Checked, headerColumnsInAZOrderToolStripMenuItem.Checked);
             }
             catch (Exception ex)
             {
@@ -175,6 +177,8 @@ Zip Assets © SharpZipLib (http://www.sharpdevelop.net/OpenSource/SharpZipLib/)
                 savethese1.Add(whereTB);
                 if (tableLB != null && tableLB.SelectedIndex != -1)
                     tp.Add(new Tuple<string, string>("table", tableLB.SelectedItem.ToString()));
+                savethese2.Add(openXLSOnFinishToolStripMenuItem);
+                savethese2.Add(headerColumnsInAZOrderToolStripMenuItem);
             }
 
             FormConfigRestore.SaveConfig(this, configPath, savethese1, savethese2, tp);

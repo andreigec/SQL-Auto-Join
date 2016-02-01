@@ -52,11 +52,11 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
             return res;
         }
 
-        public void Generate(string table, string @where, bool openFile)
+        public void Generate(string table, string @where, bool openFile, bool alphaHeaderCols)
         {
             DataTableExporter cs = new DataTableExporter();
             var ts = new List<string>();
-            AddRows(ref cs, table, ref ts, @where);
+            AddRows(ref cs, table, ref ts, @where, alphaHeaderCols);
 
             //output
             cs.ExportXLS("SQLAUTOJOIN" + FileExtras.GenerateRandomFileName("xlsx"), openFile);
@@ -87,7 +87,6 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
 
             foreach (var keyname in ids)
             {
-                //var tablename = Tables.FirstOrDefault(s => Tables.Any(s2 => s2 == "L" + s || s == s2) && seentables2.Any(s2 => s2 == s) == false).ToList();
                 var tablename = Tables.FirstOrDefault(s => s != null && (s == "L" + keyname || s == keyname));
                 if (tablename != null)
                     ret.Add(new SQLKey() { KeyName = keyname + "ID", TableName = tablename });
@@ -96,7 +95,7 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
             return ret;
         }
 
-        private void AddRows(ref DataTableExporter csv, string table, ref List<string> seentables, string where, int depth = 0)
+        private void AddRows(ref DataTableExporter csv, string table, ref List<string> seentables, string where, bool alphaHeaderCols, int depth = 0)
         {
             if (seentables.Contains(table))
                 return;
@@ -116,7 +115,7 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
                 }
                 seentables.Add(table);
 
-                csv.AddRow(r, table);
+                csv.AddRow(r, table, alphaHeaderCols);
                 var ts = GetParsedForeignKeyTables(r.Keys.ToList(), table);
                 //recurse with these tables
                 foreach (var t in ts)
@@ -124,7 +123,7 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
                     var key = t.KeyName;
                     var val = r[key];
                     var lwhere = $" where {key} = {val}";
-                    AddRows(ref csv, t.TableName, ref seentables, lwhere, depth + 1);
+                    AddRows(ref csv, t.TableName, ref seentables, lwhere, alphaHeaderCols, depth + 1);
                 }
 
                 if (depth == 0)
