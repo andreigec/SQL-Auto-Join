@@ -20,7 +20,6 @@ build:
   parallel: true
   verbosity: minimal
 after_build:
-after_build:
 - ps: >-
     cd %APPVEYOR_BUILD_FOLDER%
 
