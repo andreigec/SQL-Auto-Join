@@ -27,11 +27,6 @@ namespace SQLRegex
         public string ConnectionString;
         private DbContext c;
         public List<string> Tables;
-        //public List<string> Columns;
-        //public string InRegex;
-        //public string OutRegex;
-        //public bool TestMode = true;
-
 
         public Controller(string connectionString)
         {
