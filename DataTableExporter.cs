@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using ANDREICSLIB;
@@ -44,27 +45,24 @@ namespace SQLAutoJoin
         public DataTableExporter()
         {
         }
-
+        
         public void AddPage()
         {
             pages.Add(currentPage);
             currentPage = new Page { Name = "Page" + pages.Count };
         }
 
-        public void AddRow(Dictionary<string, object> rows, string tableName, bool alphaHeaderCols)
+        public void AddRow(Dictionary<string, object> rows, string tableName)
         {
             var unique = rows.Keys.Where(s => HeaderRows.Contains(s) == false).ToList();
             if (HeaderRows.Any() == false)
                 HeaderRows.Add("");
 
-            if (alphaHeaderCols == false)
-                HeaderRows.AddRange(unique);
-            else
-            {
-                ListExtras.InsertAlphabetically(ref HeaderRows, unique);
-            }
+            HeaderRows.AddRange(unique);
 
             var data = ListExtras.Initialise(HeaderRows.Count, "");
+            if (tableName == "Event")
+                ;
             foreach (var row in rows)
             {
                 var i = HeaderRows.IndexOf(row.Key);
@@ -164,7 +162,7 @@ namespace SQLAutoJoin
             {
                 SetWorkbookCells(pck, p, ref maxx, ref maxy);
             }
-
+            
             ColourFormatDocument(pck, maxx, maxy);
             SetHeaderColours(pck, maxx, maxy);
             AutoFit(pck);

@@ -51,6 +51,18 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
         {
             DataTableExporter cs = new DataTableExporter();
             var ts = new List<string>();
+            var headers = new List<string>();
+
+            if (alphaHeaderCols)
+            {
+                GetHeaderRows(ref cs, ref headers, table, ref ts, @where);
+                //order
+                headers = headers.OrderBy(s => s).ToList();
+                //init
+                cs.HeaderRows = headers;
+                ts = new List<string>();
+            }
+
             AddRows(ref cs, table, ref ts, @where, alphaHeaderCols);
 
             //output
@@ -90,15 +102,26 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
             return ret;
         }
 
+        private Dictionary<string, List<Dictionary<string, object>>> cache = new Dictionary<string, List<Dictionary<string, object>>>();
+        public List<Dictionary<string, object>> RunQuery(string table, string @where)
+        {
+            string q = $"select top 10 * from {table} {@where}";
+            if (cache.ContainsKey(q))
+                return cache[q];
+
+            var tableValues = c.Database.DynamicSQlQueryToDict(q);
+            tableValues.ForEach(s => DictionaryExtras.RemoveEmptyKeyValues(ref s));
+            cache[q] = tableValues;
+            return tableValues;
+        }
+
         private void AddRows(ref DataTableExporter csv, string table, ref List<string> seentables, string where, bool alphaHeaderCols, int depth = 0)
         {
             if (seentables.Contains(table))
                 return;
 
             //get data
-            string q = $"select top 10 * from {table} {@where}";
-            var tableValues = c.Database.DynamicSQlQueryToDict(q);
-            tableValues.ForEach(s => DictionaryExtras.RemoveEmptyKeyValues(ref s));
+            var tableValues = RunQuery(table, @where);
 
             //insert
             int i = 0;
@@ -110,7 +133,7 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
                 }
                 seentables.Add(table);
 
-                csv.AddRow(r, table, alphaHeaderCols);
+                csv.AddRow(r, table);
                 var ts = GetParsedForeignKeyTables(r.Keys.ToList(), table);
                 //recurse with these tables
                 foreach (var t in ts)
@@ -130,5 +153,64 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
                 i++;
             }
         }
+
+        private void GetHeaderRows(ref DataTableExporter csv, ref List<string> headers, string table, ref List<string> seentables, string where, int depth = 0)
+        {
+            if (seentables.Contains(table))
+                return;
+
+            //get data
+            var tableValues = RunQuery(table, @where);
+
+            //insert
+            int i = 0;
+            foreach (var r in tableValues)
+            {
+                if (depth == 0)
+                {
+                    seentables = new List<string>();
+                }
+                seentables.Add(table);
+
+                //
+                List<string> list = headers;
+                var unique = r.Keys.Where(s => list.Contains(s) == false).ToList();
+                if (headers.Any() == false)
+                    headers.Add("");
+
+                headers.AddRange(unique);
+                //
+                var ts = GetParsedForeignKeyTables(r.Keys.ToList(), table);
+                //recurse with these tables
+                foreach (var t in ts)
+                {
+                    var key = t.KeyName;
+                    var val = r[key];
+                    var lwhere = $" where {key} = {val}";
+                    GetHeaderRows(ref csv, ref headers, t.TableName, ref seentables, lwhere, depth + 1);
+                }
+
+                if (depth == 0)
+                {
+                    return;
+                }
+                i++;
+            }
+        }
+
+        private List<string> GetHeaderRows(Dictionary<string, object> tablevalues)
+        {
+            //foreach (var rows in tablevalues)
+            //{
+
+            //    var unique = rows.Keys.Where(s => HeaderRows.Contains(s) == false).ToList();
+            //    if (HeaderRows.Any() == false)
+            //        HeaderRows.Add("");
+
+            //    HeaderRows.AddRange(unique);
+            //}
+            return null;
+        }
+
     }
 }
