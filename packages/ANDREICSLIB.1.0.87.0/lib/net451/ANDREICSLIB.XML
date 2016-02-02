@@ -199,7 +199,7 @@
             <param name="basedir"></param>
             <returns></returns>
         </member>
-        <member name="M:ANDREICSLIB.ClassExtras.ExpandoObjectHelpers.ToExpando(System.Collections.Generic.IDictionary{System.String,System.Object})">
+        <member name="M:ANDREICSLIB.ClassExtras.ExpandoObjectExtras.ToExpando(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Extension method that turns a dictionary of string and object to an ExpandoObject
             </summary>
@@ -850,6 +850,59 @@
             example usage: https://github.com/andreigec/Consultant-Plus
             </summary>
         </member>
+        <member name="F:ANDREICSLIB.Licensing.AboutScreen.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:ANDREICSLIB.Licensing.AboutScreen.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:ANDREICSLIB.Licensing.AboutScreen.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:ANDREICSLIB.Licensing.HelpScreen.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:ANDREICSLIB.Licensing.HelpScreen.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:ANDREICSLIB.Licensing.HelpScreen.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:ANDREICSLIB.Licensing.Licensing.ShowingAbout">
+            <summary>
+            so we dont allow 2 instances of the about dialog
+            </summary>
+        </member>
+        <member name="F:ANDREICSLIB.Licensing.Licensing.ShowingHelp">
+            <summary>
+            so we dont allow 2 instances of the help dialog
+            </summary>
+        </member>
+        <member name="M:ANDREICSLIB.Licensing.Licensing.CreateLicense(System.Windows.Forms.Form,System.Windows.Forms.MenuStrip,ANDREICSLIB.Licensing.Licensing.SolutionDetails)">
+            <summary>
+            Adds functionality for auto updating application, and creation of about screen.
+            Inserts about tab on menu strip
+            </summary>
+            <param name="baseform"></param>
+            <param name="newsd"></param>
+            <param name="existingMenuStrip"></param>
+        </member>
         <member name="T:ANDREICSLIB.NewControls.SelectItemFromListView">
             <summary>
             example usage: https://github.com/andreigec/MTG-Proxy-Maker
@@ -1158,59 +1211,6 @@
             Required method for Designer support - do not modify
             the contents of this method with the code editor.
             </summary>
-        </member>
-        <member name="F:ANDREICSLIB.Licensing.AboutScreen.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:ANDREICSLIB.Licensing.AboutScreen.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:ANDREICSLIB.Licensing.AboutScreen.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="F:ANDREICSLIB.Licensing.HelpScreen.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:ANDREICSLIB.Licensing.HelpScreen.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:ANDREICSLIB.Licensing.HelpScreen.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="F:ANDREICSLIB.Licensing.Licensing.ShowingAbout">
-            <summary>
-            so we dont allow 2 instances of the about dialog
-            </summary>
-        </member>
-        <member name="F:ANDREICSLIB.Licensing.Licensing.ShowingHelp">
-            <summary>
-            so we dont allow 2 instances of the help dialog
-            </summary>
-        </member>
-        <member name="M:ANDREICSLIB.Licensing.Licensing.CreateLicense(System.Windows.Forms.Form,System.Windows.Forms.MenuStrip,ANDREICSLIB.Licensing.Licensing.SolutionDetails)">
-            <summary>
-            Adds functionality for auto updating application, and creation of about screen.
-            Inserts about tab on menu strip
-            </summary>
-            <param name="baseform"></param>
-            <param name="newsd"></param>
-            <param name="existingMenuStrip"></param>
         </member>
         <member name="T:ANDREICSLIB.ClassReplacements.PanelReplacement">
             <summary>

@@ -20,7 +20,7 @@ namespace SQLAutoJoin
             var ret = new List<Dictionary<string, object>>();
             foreach (var d in l)
             {
-                var dd = ANDREICSLIB.ClassExtras.ExpandoObjectHelpers.ToDictionary(d);
+                var dd = ANDREICSLIB.ClassExtras.ExpandoObjectExtras.ToDictionary(d);
                 ret.Add(dd);
             }
             return ret;
