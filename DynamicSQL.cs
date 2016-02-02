@@ -1,26 +1,25 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-using System.Dynamic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Threading.Tasks;
-using ANDREICSLIB;
 using ANDREICSLIB.ClassExtras;
+using PropertyAttributes = System.Reflection.PropertyAttributes;
 
 namespace SQLAutoJoin
 {
     public static class DynamicSQL
     {
-        public static List<Dictionary<string, object>> DynamicSQlQueryToDict(this Database database, string sql, params object[] parameters)
+        public static List<Dictionary<string, object>> DynamicSQlQueryToDict(this Database database, string sql,
+            params object[] parameters)
         {
-            var l = (((DbRawSqlQuery)DynamicSqlQuery(database, sql, parameters)).ToListAsync()).Result;
+            var l = (((DbRawSqlQuery) DynamicSqlQuery(database, sql, parameters)).ToListAsync()).Result;
             var ret = new List<Dictionary<string, object>>();
             foreach (var d in l)
             {
-                var dd = ANDREICSLIB.ClassExtras.ExpandoObjectExtras.ToDictionary(d);
+                var dd = ExpandoObjectExtras.ToDictionary(d);
                 ret.Add(dd);
             }
             return ret;
@@ -28,10 +27,10 @@ namespace SQLAutoJoin
 
         public static dynamic DynamicSqlQuery(this Database database, string sql, params object[] parameters)
         {
-            TypeBuilder builder = createTypeBuilder(
-                    "MyDynamicAssembly", "MyDynamicModule", "MyDynamicObject");
+            var builder = createTypeBuilder(
+                "MyDynamicAssembly", "MyDynamicModule", "MyDynamicObject");
 
-            using (System.Data.IDbCommand command = database.Connection.CreateCommand())
+            using (IDbCommand command = database.Connection.CreateCommand())
             {
                 try
                 {
@@ -43,17 +42,17 @@ namespace SQLAutoJoin
                         command.Parameters.Add(param);
                     }
 
-                    using (System.Data.IDataReader reader = command.ExecuteReader())
+                    using (var reader = command.ExecuteReader())
                     {
                         var schema = reader.GetSchemaTable();
 
-                        foreach (System.Data.DataRow row in schema.Rows)
+                        foreach (DataRow row in schema.Rows)
                         {
-                            string name = (string)row["ColumnName"];
-                            Type type = (Type)row["DataType"];
-                            if (type != typeof(string) && (bool)row.ItemArray[schema.Columns.IndexOf("AllowDbNull")])
+                            var name = (string) row["ColumnName"];
+                            var type = (Type) row["DataType"];
+                            if (type != typeof (string) && (bool) row.ItemArray[schema.Columns.IndexOf("AllowDbNull")])
                             {
-                                type = typeof(Nullable<>).MakeGenericType(type);
+                                type = typeof (Nullable<>).MakeGenericType(type);
                             }
                             createAutoImplementedProperty(builder, name, type);
                         }
@@ -66,7 +65,7 @@ namespace SQLAutoJoin
                 }
             }
 
-            Type resultType = builder.CreateType();
+            var resultType = builder.CreateType();
 
             return database.SqlQuery(resultType, sql, parameters);
         }
@@ -74,10 +73,10 @@ namespace SQLAutoJoin
         private static TypeBuilder createTypeBuilder(
             string assemblyName, string moduleName, string typeName)
         {
-            TypeBuilder typeBuilder = AppDomain
+            var typeBuilder = AppDomain
                 .CurrentDomain
                 .DefineDynamicAssembly(new AssemblyName(assemblyName),
-                                       AssemblyBuilderAccess.Run)
+                    AssemblyBuilderAccess.Run)
                 .DefineDynamicModule(moduleName)
                 .DefineType(typeName, TypeAttributes.Public);
             typeBuilder.DefineDefaultConstructor(MethodAttributes.Public);
@@ -92,21 +91,21 @@ namespace SQLAutoJoin
             const string SetterPrefix = "set_";
 
             // Generate the field.
-            FieldBuilder fieldBuilder = builder.DefineField(
+            var fieldBuilder = builder.DefineField(
                 string.Concat(PrivateFieldPrefix, propertyName),
-                              propertyType, FieldAttributes.Private);
+                propertyType, FieldAttributes.Private);
 
             // Generate the property
-            PropertyBuilder propertyBuilder = builder.DefineProperty(
-                propertyName, System.Reflection.PropertyAttributes.HasDefault, propertyType, null);
+            var propertyBuilder = builder.DefineProperty(
+                propertyName, PropertyAttributes.HasDefault, propertyType, null);
 
             // Property getter and setter attributes.
-            MethodAttributes propertyMethodAttributes =
+            var propertyMethodAttributes =
                 MethodAttributes.Public | MethodAttributes.SpecialName |
                 MethodAttributes.HideBySig;
 
             // Define the getter method.
-            MethodBuilder getterMethod = builder.DefineMethod(
+            var getterMethod = builder.DefineMethod(
                 string.Concat(GetterPrefix, propertyName),
                 propertyMethodAttributes, propertyType, Type.EmptyTypes);
 
@@ -114,22 +113,22 @@ namespace SQLAutoJoin
             // ldarg.0
             // ldfld,_field
             // ret
-            ILGenerator getterILCode = getterMethod.GetILGenerator();
+            var getterILCode = getterMethod.GetILGenerator();
             getterILCode.Emit(OpCodes.Ldarg_0);
             getterILCode.Emit(OpCodes.Ldfld, fieldBuilder);
             getterILCode.Emit(OpCodes.Ret);
 
             // Define the setter method.
-            MethodBuilder setterMethod = builder.DefineMethod(
+            var setterMethod = builder.DefineMethod(
                 string.Concat(SetterPrefix, propertyName),
-                propertyMethodAttributes, null, new Type[] { propertyType });
+                propertyMethodAttributes, null, new[] {propertyType});
 
             // Emit the IL code.
             // ldarg.0
             // ldarg.1
             // stfld,_field
             // ret
-            ILGenerator setterILCode = setterMethod.GetILGenerator();
+            var setterILCode = setterMethod.GetILGenerator();
             setterILCode.Emit(OpCodes.Ldarg_0);
             setterILCode.Emit(OpCodes.Ldarg_1);
             setterILCode.Emit(OpCodes.Stfld, fieldBuilder);
@@ -139,5 +138,4 @@ namespace SQLAutoJoin
             propertyBuilder.SetSetMethod(setterMethod);
         }
     }
-
 }

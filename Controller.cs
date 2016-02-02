@@ -1,31 +1,20 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Core.Metadata.Edm;
-using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Dynamic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using ANDREICSLIB;
 using ANDREICSLIB.ClassExtras;
-using Newtonsoft.Json;
-using SQLAutoJoin;
 
-namespace SQLRegex
+namespace SQLAutoJoin
 {
     public class Controller
     {
+        private readonly DbContext c;
+
+        private readonly Dictionary<string, List<Dictionary<string, object>>> cache =
+            new Dictionary<string, List<Dictionary<string, object>>>();
+
         public string ConnectionString;
-        private DbContext c;
         public List<string> Tables;
 
         public Controller(string connectionString)
@@ -36,7 +25,7 @@ namespace SQLRegex
 
         public List<string> GetTables()
         {
-            string q = @"SELECT TABLE_NAME 
+            var q = @"SELECT TABLE_NAME 
 FROM INFORMATION_SCHEMA.TABLES
 WHERE TABLE_TYPE = 'BASE TABLE' ";
 
@@ -49,7 +38,7 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
 
         public void Generate(string table, string @where, bool openFile, bool alphaHeaderCols)
         {
-            DataTableExporter cs = new DataTableExporter();
+            var cs = new DataTableExporter();
             var ts = new List<string>();
             var headers = new List<string>();
 
@@ -69,12 +58,6 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
             cs.ExportXLS("SQLAUTOJOIN" + FileExtras.GenerateRandomFileName("xlsx"), openFile);
         }
 
-        public class SQLKey
-        {
-            public string TableName { get; set; }
-            public string KeyName { get; set; }
-        }
-
         public List<string> GetListOfForeignKeyTables(List<string> cols, string origtable)
         {
             //ends with id, but isnt orig table
@@ -89,20 +72,22 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
 
         public List<SQLKey> GetParsedForeignKeyTables(List<string> cols, string origtable)
         {
-            var ids = GetListOfForeignKeyTables(cols, origtable).Select(s => s.Substring(0, s.LastIndexOf("id", StringComparison.CurrentCultureIgnoreCase))).ToList();
+            var ids =
+                GetListOfForeignKeyTables(cols, origtable)
+                    .Select(s => s.Substring(0, s.LastIndexOf("id", StringComparison.CurrentCultureIgnoreCase)))
+                    .ToList();
             var ret = new List<SQLKey>();
 
             foreach (var keyname in ids)
             {
                 var tablename = Tables.FirstOrDefault(s => s != null && (s == "L" + keyname || s == keyname));
                 if (tablename != null)
-                    ret.Add(new SQLKey() { KeyName = keyname + "ID", TableName = tablename });
+                    ret.Add(new SQLKey {KeyName = keyname + "ID", TableName = tablename});
             }
 
             return ret;
         }
 
-        private Dictionary<string, List<Dictionary<string, object>>> cache = new Dictionary<string, List<Dictionary<string, object>>>();
         public List<Dictionary<string, object>> RunQuery(string table, string @where)
         {
             string q = $"select top 10 * from {table} {@where}";
@@ -115,7 +100,8 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
             return tableValues;
         }
 
-        private void AddRows(ref DataTableExporter csv, string table, ref List<string> seentables, string where, bool alphaHeaderCols, int depth = 0)
+        private void AddRows(ref DataTableExporter csv, string table, ref List<string> seentables, string where,
+            bool alphaHeaderCols, int depth = 0)
         {
             if (seentables.Contains(table))
                 return;
@@ -124,7 +110,7 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
             var tableValues = RunQuery(table, @where);
 
             //insert
-            int i = 0;
+            var i = 0;
             foreach (var r in tableValues)
             {
                 if (depth == 0)
@@ -154,7 +140,8 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
             }
         }
 
-        private void GetHeaderRows(ref DataTableExporter csv, ref List<string> headers, string table, ref List<string> seentables, string where, int depth = 0)
+        private void GetHeaderRows(ref DataTableExporter csv, ref List<string> headers, string table,
+            ref List<string> seentables, string where, int depth = 0)
         {
             if (seentables.Contains(table))
                 return;
@@ -163,7 +150,7 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
             var tableValues = RunQuery(table, @where);
 
             //insert
-            int i = 0;
+            var i = 0;
             foreach (var r in tableValues)
             {
                 if (depth == 0)
@@ -173,7 +160,7 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
                 seentables.Add(table);
 
                 //
-                List<string> list = headers;
+                var list = headers;
                 var unique = r.Keys.Where(s => list.Contains(s) == false).ToList();
                 if (headers.Any() == false)
                     headers.Add("");
@@ -212,5 +199,10 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
             return null;
         }
 
+        public class SQLKey
+        {
+            public string TableName { get; set; }
+            public string KeyName { get; set; }
+        }
     }
 }

@@ -1,11 +1,11 @@
-namespace SQLRegex
+namespace SQLAutoJoin
 {
     public class LviItem
     {
-        public string table;
         public string column;
-        public string rowValue;
         public string postRegex;
+        public string rowValue;
+        public string table;
         public string where;
 
         public LviItem(string table, string column, string rowValue, string postRegex, string where)

@@ -1,4 +1,4 @@
-namespace SQLRegex
+namespace SQLAutoJoin
 {
     partial class Form1
     {
