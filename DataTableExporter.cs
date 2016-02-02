@@ -46,8 +46,6 @@ namespace SQLAutoJoin
             HeaderRows.AddRange(unique);
 
             var data = ListExtras.Initialise(HeaderRows.Count, "");
-            if (tableName == "Event")
-                ;
             foreach (var row in rows)
             {
                 var i = HeaderRows.IndexOf(row.Key);

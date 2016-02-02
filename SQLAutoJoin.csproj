@@ -34,6 +34,10 @@
     <AllowedReferenceRelatedFileExtensions>
       -
     </AllowedReferenceRelatedFileExtensions>
+    <LangVersion>6</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>SQLAutoJoin.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ANDREICSLIB, Version=1.0.89.0, Culture=neutral, processorArchitecture=MSIL">
