@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -10,8 +10,22 @@ namespace SQLAutoJoin
 {
     public partial class Form1 : Form
     {
-        private static readonly string configPath = "SQLRegex.cfg";
         private Controller c;
+
+        private const string configPath = "config.cfg";
+        #region licensing
+        private const String HelpString = "";
+
+        private readonly String OtherText =
+            @"©" + DateTime.Now.Year +
+            @" Andrei Gec (http://www.andreigec.net)
+
+Licensed under GNU LGPL (http://www.gnu.org/)
+
+Zip Assets © SharpZipLib (http://www.sharpdevelop.net/OpenSource/SharpZipLib/)
+";
+
+        #endregion
 
         public Form1()
         {
@@ -20,7 +34,7 @@ namespace SQLAutoJoin
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            InitLicensing();
+            Licensing.LicensingForm(this, menuStrip1, HelpString, OtherText);
 
             var literals = LoadConfig();
 
@@ -147,27 +161,5 @@ namespace SQLAutoJoin
         {
             UpdateConnectionString(connectionStringTB.Text);
         }
-
-        #region licensing
-
-        private const string AppTitle = "SQL Auto Join";
-        private const string AppRepo = "SQLAutoJoin";
-
-        private const string HelpString = "";
-
-        private readonly string OtherText =
-            @"©" + DateTime.Now.Year +
-            @" Andrei Gec (http://www.andreigec.net)
-Licensed under GNU LGPL (http://www.gnu.org/)
-";
-
-        public void InitLicensing()
-        {
-            Licensing.CreateLicense(this, menuStrip1,
-                new Licensing.SolutionDetails(GitHubLicensing.GetGitHubReleaseDetails, HelpString, AppTitle, AppRepo,
-                    AssemblyExtras.GetAssemblyFileVersionInfo(), OtherText));
-        }
-
-        #endregion
     }
 }

@@ -95,7 +95,7 @@ WHERE TABLE_TYPE = 'BASE TABLE' ";
                 return cache[q];
 
             var tableValues = c.Database.DynamicSQlQueryToDict(q);
-            tableValues.ForEach(s => DictionaryExtras.RemoveEmptyKeyValues(ref s));
+            tableValues.ForEach(s => DictionaryExtras.RemoveEmptyKeysAndValues(ref s));
             cache[q] = tableValues;
             return tableValues;
         }

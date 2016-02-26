@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SQLAutoJoin</RootNamespace>
-    <AssemblyName>SQLAutoJoin</AssemblyName>
+    <AssemblyName>SQL-Auto-Join</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -40,8 +40,8 @@
     <StartupObject>SQLAutoJoin.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ANDREICSLIB, Version=1.0.89.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\ANDREICSLIB.1.0.89.0\lib\net451\ANDREICSLIB.dll</HintPath>
+    <Reference Include="ANDREICSLIB, Version=1.0.103.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\ANDREICSLIB.1.0.103.0\lib\net451\ANDREICSLIB.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
